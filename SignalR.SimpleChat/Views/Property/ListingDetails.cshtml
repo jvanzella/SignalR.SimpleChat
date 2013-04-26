@@ -1,0 +1,69 @@
+﻿@{
+    ViewBag.Title = "ListingDetails";
+}
+
+<h2>Listing Details</h2>
+
+<div id="realtor" style="border:black 1px solid;border-radius: 5px;width:150px; height: 150px;position: absolute;top: 300px;right: 15px">
+    <p>Realtor Information</p>
+    <a href="#" id="togglebutton">Online: Chat Now.</a>
+</div>
+
+
+<div id="chatPopup" style="visibility: hidden; border-style:solid; border-width: 1px;width: 300px; height: 300px; position:absolute; right:15px; bottom:15px">
+    <p id="chatWindow" style="position:relative; left: 0; top: -15px; height: 92%; width: 100%;background-color: #eeeeee;float:left;"></p>
+    <div style="left:2px;bottom:5px;position:absolute;width:296px;height:8%;float:left;">
+        <input type="text" id="textMessage"  style="float:left;width:75%;height:90%;background-color:#CCCCCC" />
+        <input type="button" id="SendMessage" value="Send" style="float:left;width:20%;height:90%" />
+    </div>
+</div>
+
+<script language="javascript" type="text/javascript">
+
+    $(document).ready(function () {
+        var chatHubClient = $.connection.chatHub;
+        
+        $("#togglebutton").toggle(function() {
+            $(this).html("Leave chat");
+            $("#chatPopup").css({ "visibility": "visible" });
+            chatHubClient.join('Anonymous');
+        }, function() {
+            $(this).html("Online: Chat Now.");
+            $("#chatPopup").css({ "visibility": "hidden" });
+            chatHubClient.leave('Anonymous');
+        });
+        
+        $(function () {
+            
+
+            // Send a new message to the server
+            $("#SendMessage").click(function () {
+                var message = $('#textMessage').val();
+                chatHubClient.sendMessage(message);
+                $('#textMessage').val("");
+            });
+
+            // Start the connection
+            $.connection.hub.start(function () {
+                
+        });
+
+             // Receive a new message from the server
+             chatHubClient.newMessage = function (message) {
+                 message = $("#chatWindow").html() + "<br />" + message;
+                 $("#chatWindow").html(message);
+             };
+
+             // Receive the new active userlist
+            chatHubClient.userList = function(message) {
+                message = JSON.parse(message);
+                var options;
+                $.each(message, function(index) {
+                    options += '<option value="' + message[index].Name + '">' + message[index].Name + '</option>';
+                });
+                $("select#users").html(options);
+            };
+        });
+    });
+
+</script>

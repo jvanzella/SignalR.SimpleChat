@@ -1,0 +1,21 @@
+﻿@model SignalR.Chat.Models.Client
+           
+@using (Html.BeginForm("Loginuser", "Chat"))
+{
+    <table>
+        <tr>
+            <td>
+                Nickname:
+            </td>
+            <td>
+                @Html.TextBoxFor(model => model.Name)
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                 <input type="submit" value="Login" />            
+            </td>
+        </tr>
+    </table>
+}
